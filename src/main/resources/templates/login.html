@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+    	<title>ShopCart Sample</title>
+    	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    </head>
+	<body>
+		<h2>Authentication</h2>
+		<p id="alert" style="color: red; display: none;">Username or password are invalid.</p>
+		<p id="info" style="color: blue; display: none;">User was deauthenticated sucessfully.</p>
+		<form th:action="@{/login}" method="POST">
+			<label for="username">Username</label>
+			<input id="username" type="text" name="username" />
+			<label for="passoword">Password</label>
+			<input id="password" type="password" name="password" />
+			<button type="submit"> Authenticate </button>
+		</form>
+		<script type="text/javascript" th:src="@{/js/jquery-3.4.1.min.js}"></script>
+		<script type="text/javascript">
+			$(function() {
+				$.urlParam = function(paramName) {
+				    var results = new RegExp('[\?&]' + paramName).exec(window.location.href);
+				    if (results == null) {
+				       return null;
+				    } else {
+				       return results[1] || true;
+				    }
+				}
+				
+				if($.urlParam('error')) {
+					$('#info').hide();
+					$('#alert').show();
+				} else {
+					if($.urlParam('logout')) {
+						$('#alert').hide();
+						$('#info').show();
+					}
+				}
+			});
+		</script>
+	</body>
+</html>

@@ -35,11 +35,9 @@ public class Cart {
 	}
 	
 	public BigDecimal getTotal() {
-		BigDecimal total = new BigDecimal(0);
-		if(!this.itens.isEmpty()) {
-			for(CartItem item: this.itens) {
-				total.add(item.getSubTotal());
-			}
+		BigDecimal total = BigDecimal.ZERO;
+		for(CartItem item: this.itens) {
+			total = total.add(item.getSubTotal());
 		}
 		return total;
 	}

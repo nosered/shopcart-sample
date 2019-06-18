@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+    	<title>ShopCart Sample</title>
+    	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    	<meta name="_csrf" th:content="${_csrf.token}">
+    	<meta name="_csrf_header" th:content="${_csrf.headerName}">
+    </head>
+	<body>
+		<h2>Cart Shopping</h2>
+		<table id="cart-table">
+			<thead>
+				<tr>
+					<th>Description</th>
+					<th>Price</th>
+					<th>Quantity</th>
+					<th>Remove from cart</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="cartItem: ${cart.itens}">
+					<td th:text="${cartItem.product.id}" style="display: none;"></td>
+					<td th:text="${cartItem.product.description}"></td>
+					<td th:text="${cartItem.product.price}"></td>
+					<td th:text="${cartItem.quantity}"></td>
+					<td><a href="" class="btn-remove-from-cart"> X </a></td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<h3> <a th:href="@{/}">Shopping Cart: <span id="cart-itens-count" th:text="${session.cart.itens.size()}"></span></a> </h3>
+		<h4>Total: <span id="cart-total-count" th:text="${session.cart.total}"></span></h4>	
+		
+		<script type="text/javascript" th:src="@{/js/jquery-3.4.1.min.js}"></script>
+		<script type="text/javascript" src="https://stc.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js"></script>
+		<script type="text/javascript">
+			$(function() {
+				$('.btn-remove-from-cart').click(function() {
+					var rowTable = $(this).parents('tr')[0];
+					var produtoInfo = rowTable.getElementsByTagName('td');
+					
+					var cartItem = {
+						product: {
+							id: produtoInfo[0].innerHTML
+						}
+					};
+					
+					$.ajax({
+						type: 'DELETE',
+						url: '/ws/remove-from-cart',
+						contentType: 'application/json',
+						data: JSON.stringify(cartItem),
+						success: function(data) {
+							rowTable.remove();
+						},
+						error: function (error) {
+				            console.log("ERROR : ", error);
+				        }
+					});
+				});
+			});
+		</script>
+	</body>
+</html>
