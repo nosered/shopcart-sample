@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+    	<title>ShopCart Sample</title>
+    	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    	<meta name="_csrf" th:content="${_csrf.token}">
+    	<meta name="_csrf_header" th:content="${_csrf.headerName}">
+    </head>
+	<body>
+		<h2>Checkout</h2>
+		<p><strong>Session ID:</strong> <span th:text="${sessionID}"></span></p>
+		
+		<script type="text/javascript" th:src="@{/js/jquery-3.4.1.min.js}"></script>
+		<script type="text/javascript" src="https://stc.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js"></script>
+		<script type="text/javascript">
+			$(function() {
+				
+			});
+		</script>
+	</body>
+</html>

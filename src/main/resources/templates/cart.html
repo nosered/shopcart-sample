@@ -18,18 +18,20 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="cartItem: ${cart.itens}">
-					<td th:text="${cartItem.product.id}" style="display: none;"></td>
-					<td th:text="${cartItem.product.description}"></td>
-					<td th:text="${cartItem.product.price}"></td>
-					<td th:text="${cartItem.quantity}"></td>
-					<td><a href="" class="btn-remove-from-cart"> X </a></td>
+				<tr th:each="cartProduct: ${cart.cartProducts}">
+					<td th:text="${cartProduct.id}" style="display: none;"></td>
+					<td th:text="${cartProduct.product.id}" style="display: none;"></td>
+					<td th:text="${cartProduct.product.description}"></td>
+					<td th:text="${cartProduct.product.price}"></td>
+					<td th:text="${cartProduct.quantity}"></td>
+					<td><a href="javascript:;" class="btn-remove-from-cart"> X </a></td>
 				</tr>
 			</tbody>
 		</table>
 		
-		<h3> <a th:href="@{/}">Shopping Cart: <span id="cart-itens-count" th:text="${session.cart.itens.size()}"></span></a> </h3>
-		<h4>Total: <span id="cart-total-count" th:text="${session.cart.total}"></span></h4>	
+		<h3> <a th:href="@{/}">Shopping Cart: <span id="cart-itens-count" th:text="${cart.cartProducts.size()}"></span></a> </h3>
+		<h4>Total: <span id="cart-total-count" th:text="${cart.total}"></span></h4>
+		<a th:href="@{/checkout}">Checkout</a>
 		
 		<script type="text/javascript" th:src="@{/js/jquery-3.4.1.min.js}"></script>
 		<script type="text/javascript" src="https://stc.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js"></script>
@@ -39,18 +41,20 @@
 					var rowTable = $(this).parents('tr')[0];
 					var produtoInfo = rowTable.getElementsByTagName('td');
 					
-					var cartItem = {
-						product: {
-							id: produtoInfo[0].innerHTML
-						}
+					var cartProduct = {
+						id: produtoInfo[0].innerHTML
 					};
 					
 					$.ajax({
 						type: 'DELETE',
 						url: '/ws/remove-from-cart',
 						contentType: 'application/json',
-						data: JSON.stringify(cartItem),
+						data: JSON.stringify(cartProduct),
 						success: function(data) {
+							var currentItensCount = $('#cart-itens-count').text() === '0' ? 0 : Number($('#cart-itens-count').text());
+							$('#cart-itens-count').text(currentItensCount - 1);
+							var currentTotalCount = $('#cart-total-count').text() === '0' ? 0 : Number($('#cart-total-count').text());
+							$('#cart-total-count').text(currentTotalCount - (data.product.price * data.quantity));
 							rowTable.remove();
 						},
 						error: function (error) {
@@ -58,6 +62,22 @@
 				        }
 					});
 				});
+				
+				function getCookie(cname) {
+					var name = cname + "=";
+					var decodedCookie = decodeURIComponent(document.cookie);
+					var ca = decodedCookie.split(';');
+					for(var i = 0; i <ca.length; i++) {
+						var c = ca[i];
+						while (c.charAt(0) == ' ') {
+							c = c.substring(1);
+						}
+						if (c.indexOf(name) == 0) {
+							return c.substring(name.length, c.length);
+						}
+					}
+					return null;
+				}
 			});
 		</script>
 	</body>

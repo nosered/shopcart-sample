@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import br.eti.esabreu.shopcartsample.service.UserService;
 
@@ -28,18 +29,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		web
 		.ignoring()
 		.antMatchers("/ws/**")
-		.antMatchers("/home/**")
+		.antMatchers("/home")
+		.antMatchers("/")
 		.antMatchers("/js/**");
 	}
 	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		/*
-		auth.inMemoryAuthentication()
-		.withUser("one").password("{noop}1234").roles("CUSTOMER").and().passwordEncoder(passwordEncoder())
-		.withUser("two").password("{noop}1234").roles("CUSTOMER").and().passwordEncoder(passwordEncoder())
-		.withUser("three").password("{noop}1234").roles("CUSTOMER").and().passwordEncoder(passwordEncoder());
-		*/
 		auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
 	}
 	
@@ -49,8 +45,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		.authorizeRequests()
 		.anyRequest().authenticated()
 		.and()
-		.formLogin().loginPage("/login").loginProcessingUrl("/login").defaultSuccessUrl("/", true).failureUrl("/login?error").permitAll()
+		.formLogin().loginPage("/auth/login").loginProcessingUrl("/auth/login").defaultSuccessUrl("/", true).failureUrl("/auth/login?error").permitAll()
 		.and()
-		.logout().logoutUrl("/logout").logoutSuccessUrl("/login?logout").invalidateHttpSession(true).deleteCookies("JSESSIONID").permitAll();
+		.logout().logoutRequestMatcher(new AntPathRequestMatcher("/auth/logout")).logoutSuccessUrl("/auth/login?logout").invalidateHttpSession(true).deleteCookies("JSESSIONID").permitAll();
 	}
 }

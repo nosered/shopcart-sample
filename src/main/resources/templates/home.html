@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="pt"
+xmlns="http://www.w3.org/1999/xhtml"
+xmlns:th="http://www.thymeleaf.org">
+
 	<head>
     	<title>ShopCart Sample</title>
     	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    	
-    	<!--link rel="stylesheet" type="text/css" th:href="@{}" /-->
     </head>
 	<body>
 		<h2>Products List</h2>
@@ -30,20 +31,49 @@
 			</tbody>
 		</table>
 		
-		<h3> <a th:href="@{/view-cart}">Shopping Cart: <span id="cart-itens-count" th:text="${session.cart.itens.size()}"></span></a> </h3>
-		<h4>Total: <span id="cart-total-count" th:text="${session.cart.total}"></span></h4>
+		<h3> <a th:href="@{/view-cart}">Shopping Cart: <span id="cart-itens-count">0</span></a> </h3>
+		<h4>Total: <span id="cart-total-count">0</span></h4>
 		
-		<form th:action="@{/logout}" method="POST">
-			<input type="submit" value="Deauthenticate" />
-		</form>
+       	<a th:href="@{/auth/logout}">LOGOUT</a>
 		<script type="text/javascript" th:src="@{/js/jquery-3.4.1.min.js}"></script>
 		<script type="text/javascript">
 			$(function() {
+				$.ajax({
+					type: 'GET',
+					url: '/ws/cart-overall',
+					// contentType: 'application/json',
+					// data: JSON.stringify(cartProduct),
+					success: function(data) {
+						$('#cart-itens-count').text(data.productsQuantity);
+						$('#cart-total-count').text(data.total);
+					},
+					error: function (error) {
+			            console.log("ERROR : ", error);
+			        }
+				});
+				
+				
 				$('.btn-add-to-cart').click(function() {
 					var produtoInfo = $(this).parents('tr')[0].getElementsByTagName('td');
 					var produtoQuantity = produtoInfo[3].getElementsByTagName('input');
 					
-					var cartItem = {
+					var cartProduct = {
+						id: null,
+						cart: {
+							id: getCookie('shopcartId')
+						},
+						product: {
+							id: produtoInfo[0].innerHTML
+						},
+						quantity: produtoQuantity[0].value
+					};
+					
+					/*
+					var cartProduct = {
+						id: null,
+						cart: {
+							id: getCookie('shopcartId')
+						},
 						product: {
 							id: produtoInfo[0].innerHTML,
 							description: produtoInfo[1].innerHTML,
@@ -51,13 +81,15 @@
 						},
 						quantity: produtoQuantity[0].value
 					};
+					*/
 					
 					$.ajax({
 						type: 'POST',
 						url: '/ws/add-to-cart',
 						contentType: 'application/json',
-						data: JSON.stringify(cartItem),
+						data: JSON.stringify(cartProduct),
 						success: function(data) {
+							console.log(data);
 							var currentItensCount = $('#cart-itens-count').text() === '0' ? 0 : Number($('#cart-itens-count').text());
 							$('#cart-itens-count').text(currentItensCount + 1);
 							var currentTotalCount = $('#cart-total-count').text() === '0' ? 0 : Number($('#cart-total-count').text());
@@ -68,6 +100,22 @@
 				        },
 					});
 				});
+				
+				function getCookie(cname) {
+					var name = cname + "=";
+					var decodedCookie = decodeURIComponent(document.cookie);
+					var ca = decodedCookie.split(';');
+					for(var i = 0; i <ca.length; i++) {
+						var c = ca[i];
+						while (c.charAt(0) == ' ') {
+							c = c.substring(1);
+						}
+						if (c.indexOf(name) == 0) {
+							return c.substring(name.length, c.length);
+						}
+					}
+					return null;
+				}
 			});
 				
 				

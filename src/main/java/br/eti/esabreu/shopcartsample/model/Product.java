@@ -28,15 +28,6 @@ public class Product {
 	@NumberFormat(style = Style.CURRENCY)
 	private BigDecimal price;
 	
-	public Product() { }
-	
-	public Product(Long id, String description, BigDecimal price) {
-		super();
-		this.id = id;
-		this.description = description;
-		this.price = price;
-	}
-	
 	public Long getId() {
 		return id;
 	}

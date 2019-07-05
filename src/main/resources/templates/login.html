@@ -8,7 +8,7 @@
 		<h2>Authentication</h2>
 		<p id="alert" style="color: red; display: none;">Username or password are invalid.</p>
 		<p id="info" style="color: blue; display: none;">User was deauthenticated sucessfully.</p>
-		<form th:action="@{/login}" method="POST">
+		<form th:action="@{/auth/login}" method="POST">
 			<label for="username">Username</label>
 			<input id="username" type="text" name="username" />
 			<label for="passoword">Password</label>
